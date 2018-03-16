@@ -12,3 +12,8 @@ MLlib & GraphX
 
 # Hive
 todo
+
+# Spark Project
+projects: Session Analysis, Realtime AdClick Analysis, Product Analysis.
+
+
