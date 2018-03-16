@@ -1,0 +1,67 @@
+public class QuestionAnswerBuildingDriver {
+ public static class PostCommentMapper extends
+ Mapper<Object, Text, Text, Text> {
+ private DocumentBuilderFactory dbf = DocumentBuilderFactory
+ .newInstance();
+ private Text outkey = new Text();
+private Text outvalue = new Text();
+ public void map(Object key, Text value, Context context)
+ throws IOException, InterruptedException {
+ // Parse the post/comment XML hierarchy into an Element
+ Element post = getXmlElementFromString(value.toString());
+ int postType = Integer.parseInt(post.getAttribute("PostTypeId"));
+ // If postType is 1, it is a question
+ if (postType == 1) {
+ outkey.set(post.getAttribute("Id"));
+ outvalue.set("Q" + value.toString());
+ } else {
+ // Else, it is an answer
+ outkey.set(post.getAttribute("ParentId"));
+ outvalue.set("A" + value.toString());
+ }
+ context.write(outkey, outvalue);
+ }
+ private Element getXmlElementFromString(String xml) {
+ // same as previous example, “Mapper code” (page 80)
+ }
+ }
+
+//-----------------------------------
+public static class QuestionAnswerReducer extends
+ Reducer<Text, Text, Text, NullWritable> {
+ private ArrayList<String> answers = new ArrayList<String>();
+ private DocumentBuilderFactory dbf = DocumentBuilderFactory
+ .newInstance();
+ private String question = null;
+ public void reduce(Text key, Iterable<Text> values, Context context)
+ throws IOException, InterruptedException {
+ // Reset variables
+ question = null;
+ answers.clear();
+ // For each input value
+ for (Text t : values) {
+
+ // If this is the post record, store it, minus the flag
+ if (t.charAt(0) == 'Q') {
+ question = t.toString().substring(1, t.toString().length())
+ .trim();
+ } else {
+ // Else, it is a comment record. Add it to the list, minus
+ // the flag
+ answers.add(t.toString()
+ .substring(1, t.toString().length()).trim());
+ }
+ }
+ // If post is not null
+ if (question != null) {
+ // nest the comments underneath the post element
+ String postWithCommentChildren = nestElements(question, answers);
+ // write out the XML
+ context.write(new Text(postWithCommentChildren),
+ NullWritable.get());
+ }
+ }
+ ... // ommitted helper functions
+}
+
+
