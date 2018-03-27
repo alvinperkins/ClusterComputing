@@ -11,7 +11,7 @@ Structured Streaming.
 MLlib & GraphX
 
 # Hive
-todo
+Queries : SELECT WHERE GROUPBY JOIN
 
 # Spark Project
 projects: Session Analysis, Realtime AdClick Analysis, Product Analysis.
