@@ -1,7 +1,7 @@
 # ClusterComputing
 Large scale analytic with Bigdata framework.
 
-# MapReduce (mapreduce/)
+# MapReduce 
 Design pattern of MapReduce programming , problem and solution.
 
 # spark demo
